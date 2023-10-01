@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 
 @Configuration
 @EnableBatchProcessing // enable batch processing.
@@ -85,6 +87,7 @@ public class SpringBatchConfig {
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
@@ -94,6 +97,14 @@ public class SpringBatchConfig {
                 .flow(step1())
 //              .next(step()2)  here we can provide multiples step
                 .end().build();
+    }
+
+    //for making asynchronous
+    @Bean
+    public TaskExecutor taskExecutor(){
+        SimpleAsyncTaskExecutor simpleAsyncTaskExecutor = new SimpleAsyncTaskExecutor();
+        simpleAsyncTaskExecutor.setConcurrencyLimit(50);
+        return simpleAsyncTaskExecutor;
     }
 
 }
